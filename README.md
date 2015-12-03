@@ -6,3 +6,5 @@ TODO
   - learn more cool things about pandas
   - probably make a base strategy class that includes common logic/attributes
   - look into cacheing since stats.nba.com takes forever
+  - tests
+  - move CLI logic into own module
