@@ -1,3 +1,12 @@
+How to use
+----------
+  1. `pip install -r requirements.txt`
+  2. `python draftpy/draftpy.py <away@home> <away@home> ...`
+    The <away@home> should be a team's three letter abbreviation (case-insensitive).
+    You can list all the team abbreviations with the following command:
+        `python -c 'import nba_py.team; print [i for i in nba_py.team.TEAMS]'`
+
+
 TODO
 --------
   - add logic for double-double and triple-double
