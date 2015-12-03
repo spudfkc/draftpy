@@ -2,8 +2,9 @@ import os
 from nba_py import team as nbateam
 
 
-MIN_PLAYER_POINTS = int(os.environ.get("MIN_PLAYER_POINTS", "30"))
+MIN_PLAYER_POINTS = int(os.environ.get("MIN_PLAYER_POINTS", "25"))
 
+## TODO should probably move this
 DRAFT_KINGS_WEIGHTS = {
     'BLK': 2,
     'AST': 1.5,
