@@ -1,10 +1,8 @@
 from nba_py import team as nbateam
-from nba_py import player as nbaplayer
 from strategies.util import get_player_ids
 from models import PotentialPick
-
-
-MIN_POINTS = int(os.environ.get('MIN_PLAYER_POINTS', '30'))
+from strategies.util import DRAFT_KINGS_WEIGHTS
+from strategies.util import MIN_PLAYER_POINTS
 
 
 class VsTeamStrategy(object):
@@ -20,23 +18,29 @@ class VsTeamStrategy(object):
         return all_picks
 
     def picks_against_team(self, team, against_team):
-        result = []
+        picks = []
         for player_id in get_player_ids(team):
             stats = nbateam.TeamVsPlayer(team_id=against_team['id'], vs_player_id=player_id)
-            tstats = stats.json['resultSets'][1]['rowSet'][0]
-            threes = tstats[11]
-            blocks = tstats[23]
-            rebounds = tstats[19]
-            turnovers = tstats[21]
-            steals = tstats[22]
-            points = tstats[27]
-            doubledouble = tstats[29]
-            tripledouble = tstats[30]
-            assists = tstats[20]
-            pick = self.create_pick(player_id, points, threes, assists, rebounds, blocks, steals, turnovers, doubledouble, tripledouble)
-            if pick:
-                result.append(pick)
-        return result
+            tstats = stats.vs_player_overall()
+            est_points = 0
+            for k in DRAFT_KINGS_WEIGHTS.keys():
+                est_points += tstats[k].item()
+            if est_points >= MIN_PLAYER_POINTS:
+                picks.append(PotentialPick(player_id, est_points))
+            # tstats = stats.json['resultSets'][1]['rowSet'][0]
+            # threes = tstats[11]
+            # blocks = tstats[23]
+            # rebounds = tstats[19]
+            # turnovers = tstats[21]
+            # steals = tstats[22]
+            # points = tstats[27]
+            # doubledouble = tstats[29]
+            # tripledouble = tstats[30]
+            # assists = tstats[20]
+            # pick = self.create_pick(player_id, points, threes, assists, rebounds, blocks, steals, turnovers, doubledouble, tripledouble)
+            # if pick:
+            #     result.append(pick)
+        return picks
 
     def create_pick(self, player_id, points, threes, assists, rebounds, blocks, steals, turnovers, doubledouble, tripledouble):
         est_fantasy_points = points
@@ -51,7 +55,7 @@ class VsTeamStrategy(object):
             est_fantasy_points += 1.5
         if tripledouble > 1:
             est_fantasy_points += 3
-        if est_fantasy_points >= self.MIN_POINTS:
+        if est_fantasy_points >= MIN_PLAYER_POINTS:
             return PotentialPick(player_id, est_fantasy_points)
         else:
             return None

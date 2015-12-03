@@ -11,7 +11,8 @@ from nba_py import team as nbateam
 from nba_py import player as nbaplayer
 from nba_py import constants
 from strategies.util import get_player_ids
-from strategies.last_n_games import *
+from strategies.last_n_games import LastNGamesStrategy
+from strategies.vs_team import VsTeamStrategy
 from models import *
 
 constants.CURRENT_SEASON = '2015-16'
@@ -21,8 +22,8 @@ pp = pprint.PrettyPrinter(indent=2)
 def main():
     games = sys.argv[1:]
 
-    # strategy = VsTeamStrategy()
-    strategy = LastNGamesStrategy()
+    strategy = VsTeamStrategy()
+    # strategy = LastNGamesStrategy()
     f = PlayerFilter()
     g = BasicLineupGenerator()
     picker = PlayerPicker(strategy)
