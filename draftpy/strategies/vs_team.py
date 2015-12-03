@@ -27,35 +27,4 @@ class VsTeamStrategy(object):
                 est_points += tstats[k].item()
             if est_points >= MIN_PLAYER_POINTS:
                 picks.append(PotentialPick(player_id, est_points))
-            # tstats = stats.json['resultSets'][1]['rowSet'][0]
-            # threes = tstats[11]
-            # blocks = tstats[23]
-            # rebounds = tstats[19]
-            # turnovers = tstats[21]
-            # steals = tstats[22]
-            # points = tstats[27]
-            # doubledouble = tstats[29]
-            # tripledouble = tstats[30]
-            # assists = tstats[20]
-            # pick = self.create_pick(player_id, points, threes, assists, rebounds, blocks, steals, turnovers, doubledouble, tripledouble)
-            # if pick:
-            #     result.append(pick)
         return picks
-
-    def create_pick(self, player_id, points, threes, assists, rebounds, blocks, steals, turnovers, doubledouble, tripledouble):
-        est_fantasy_points = points
-        est_fantasy_points += (threes * 0.5)
-        est_fantasy_points += (assists * 1.5)
-        est_fantasy_points += (rebounds * 1.25)
-        est_fantasy_points += (blocks * 2)
-        est_fantasy_points += (steals * 2)
-        est_fantasy_points += (turnovers * -0.5)
-        ## FIXME this logic is not correct...find out what doubledouble actually is
-        if doubledouble > 1:
-            est_fantasy_points += 1.5
-        if tripledouble > 1:
-            est_fantasy_points += 3
-        if est_fantasy_points >= MIN_PLAYER_POINTS:
-            return PotentialPick(player_id, est_fantasy_points)
-        else:
-            return None
