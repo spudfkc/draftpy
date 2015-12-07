@@ -1,0 +1,2 @@
+script:
+  - python draftpy/draftpy.py ind@por
