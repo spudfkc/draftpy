@@ -4,16 +4,13 @@
 #  2. list of player salaries
 #  3. list of players that are out
 #
-import os
 import sys
 import pprint
-from nba_py import team as nbateam
-from nba_py import player as nbaplayer
 from nba_py import constants
-from strategies.util import get_player_ids
-from strategies.last_n_games import LastNGamesStrategy
-from strategies.vs_team import VsTeamStrategy
-from models import *
+from strategies import last_n_games
+# from draftpy.strategies.vs_team import VsTeamStrategy
+import models
+from generators import BasicLineupGenerator
 
 constants.CURRENT_SEASON = '2015-16'
 pp = pprint.PrettyPrinter(indent=2)
@@ -22,11 +19,11 @@ pp = pprint.PrettyPrinter(indent=2)
 def main():
     games = sys.argv[1:]
 
-    strategy = VsTeamStrategy()
-    # strategy = LastNGamesStrategy()
-    f = PlayerFilter()
+    # strategy = VsTeamStrategy()
+    strategy = last_n_games.LastNGamesStrategy()
+    f = models.PlayerFilter()
     g = BasicLineupGenerator()
-    picker = PlayerPicker(strategy)
+    picker = models.PlayerPicker(strategy)
 
     picks = picker.run(games)
 
@@ -35,6 +32,7 @@ def main():
     pp.pprint(d)
 
     lineups = g.generate(picks)
+    # print lineups
 
 
 if __name__ == "__main__":

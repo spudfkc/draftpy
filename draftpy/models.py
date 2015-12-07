@@ -9,6 +9,9 @@ class PotentialPick(object):
         self.player_id = player_id
         self.est_points = est_points
 
+    def __str__(self):
+        return '{} ~ {} ~ {}'.format(self.name, self.player_id, self.est_points)
+
 
 class PlayerPicker(object):
     strategy = None
@@ -32,11 +35,6 @@ class PlayerPicker(object):
         for game in games:
             best_picks = best_picks + self.strategy.go(game)
         return best_picks
-
-
-class BasicLineupGenerator(object):
-    def generate(self, potential_picks):
-        pass
 
 
 class PlayerFilter(object):

@@ -1,8 +1,8 @@
 from nba_py import team as nbateam
-from strategies.util import get_player_ids
-from models import PotentialPick
-from strategies.util import DRAFT_KINGS_WEIGHTS
-from strategies.util import MIN_PLAYER_POINTS
+from draftpy.models import PotentialPick
+from draftpy.strategies.util import get_player_ids
+from draftpy.strategies.util import DRAFT_KINGS_WEIGHTS
+from draftpy.strategies.util import MIN_PLAYER_POINTS
 
 
 class VsTeamStrategy(object):
