@@ -22,17 +22,6 @@ class PlayerPicker(object):
     def __init__(self, strategy):
         self.strategy = strategy
 
-    def resolve(self, picks):
-        result = []
-        # for pick in picks:
-        #     r = {
-        #         "id": pick.player_id,
-        #         "name": nbaplayer.PlayerSummary(pick.player_id).json['resultSets'][1]['rowSet'][0][1],
-        #         "points": pick.est_points,
-        #     }
-        #     result.append(r)
-        return result
-
     def run(self, games):
         best_picks = []
         for game in games:
