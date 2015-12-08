@@ -62,7 +62,7 @@ def run(dkfile, strategy):
         pick.salary = name2attr[pick.name][1]
 
     generator = GALineup(all_picks)
-    hof = generator.main()
+    pop, stats, hof = generator.main()
     hof = [i for i in hof if len(i) == 8]
     for lineup in hof:
         points = sum([all_picks[i].est_points for i in lineup])
@@ -78,6 +78,8 @@ def run(dkfile, strategy):
             print all_picks[i]
         print "    >points: {}".format(points)
         print "    >salary: {}".format(salary)
+    print ">>END HOF<<"
+    print stats.max
 
 
 class DKReader(object):

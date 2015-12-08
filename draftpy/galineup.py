@@ -8,7 +8,7 @@ from deap import creator
 from deap import tools
 
 MAX_SALARY = 50000
-MAX_POINTS = 750
+MAX_POINTS = 1000
 MIN_POINTS = 200
 INDV_INIT_SIZE = 8
 
@@ -89,13 +89,13 @@ class GALineup(object):
         MUTPB = 0.2
 
         pop = self.toolbox.population(n=MU)
-        real_hof = tools.HallOfFame(100)
-        hof = tools.ParetoFront()
+        hof = tools.HallOfFame(5)
+        # hof = tools.ParetoFront()
         stats = tools.Statistics(lambda ind: ind.fitness.values)
         stats.register("avg", numpy.mean, axis=0)
         stats.register("std", numpy.std, axis=0)
         stats.register("max", numpy.max, axis=0)
 
-        algorithms.eaMuPlusLambda(pop, self.toolbox, MU, LAMBDA, CXPB, MUTPB, NGEN, stats, halloffame=real_hof)
-        return real_hof
-        # return pop, stats, hof
+        algorithms.eaMuPlusLambda(pop, self.toolbox, MU, LAMBDA, CXPB, MUTPB, NGEN, stats, halloffame=hof)
+        # return hof
+        return pop, stats, hof

@@ -14,6 +14,7 @@ class LastNGamesStrategy(object):
 
     def go(self, game):
         """game = tuple (home, away)"""
+        # TODO add redis caching
         players = get_player_ids(game[0]) + get_player_ids(game[1])
         return self.picks_last_n_games(players)
 
