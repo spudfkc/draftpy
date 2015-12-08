@@ -1,2 +1,4 @@
 nba_py
 deap
+click
+redis

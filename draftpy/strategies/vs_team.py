@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from nba_py import team as nbateam
 from draftpy.models import PotentialPick
 from draftpy.strategies.util import get_player_ids

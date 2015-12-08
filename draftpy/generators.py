@@ -1,6 +1,8 @@
+from __future__ import absolute_import
+
 import pandas as pd
-from strategies.util import id2player
-from galineup import GALineup
+from draftpy.strategies.util import id2player
+from draftpy.galineup import GALineup
 
 
 class SalaryResolver(object):
@@ -26,7 +28,7 @@ class BasicLineupGenerator(object):
         galineup = GALineup(potential_picks)
         lineups = galineup.main()
 
-        best = lineups[:5]
+        best = [i for i in lineups if len(i) == 8]
         print "=========="
         for i in best:
             for j in i:

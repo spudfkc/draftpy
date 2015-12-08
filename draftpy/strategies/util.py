@@ -19,6 +19,8 @@ DRAFT_KINGS_WEIGHTS = {
 
 
 def get_player_ids(team):
+    if team in nbateam.TEAMS.keys():
+        team = nbateam.TEAMS[team]['id']
     if type(team) != str:
         team = team['id']
     players = nbateam.TeamPlayers(team).season_totals()
