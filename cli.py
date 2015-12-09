@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 from __future__ import absolute_import
 
-import redis
 import click
 import pandas
 from nba_py import player as nbaplayer
 from draftpy.strategies.last_n_games import LastNGamesStrategy
 from draftpy.strategies.vs_team import VsTeamStrategy
 import draftpy.galineup
-from draftpy.galineup import GALineup
+from draftpy.galineup import *
 
 
 strat2class = {
@@ -42,14 +41,9 @@ def run(dkfile, strategy):
         all_picks += strategy.go(i)
 
     # Set names on all picks, since we only have IDs at this point
-    r = redis.StrictRedis(host="192.168.99.100", port=6379, db=0)
     for pick in all_picks:
-        name = r.get(pick.player_id)
-        if not name:
-            # Ugly as fuuuck ... definitely look into changing this at some point
-            name = nbaplayer.PlayerSummary(pick.player_id).json['resultSets'][1]['rowSet'][0][1]
-            r.set(pick.player_id, name)
-        pick.name = name
+        # Ugly as fuuuck ...there is a better way, i just haven't taken the time to find it
+        pick.name = nbaplayer.PlayerSummary(pick.player_id).json['resultSets'][1]['rowSet'][0][1]
 
     # This is kind of shit. I just want a O(1) lookup time for player salary/pos
     name2attr = {}
@@ -79,7 +73,6 @@ def run(dkfile, strategy):
         print "    >points: {}".format(points)
         print "    >salary: {}".format(salary)
     print ">>END HOF<<"
-    print stats.max
 
 
 class DKReader(object):

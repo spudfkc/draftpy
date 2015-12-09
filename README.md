@@ -5,6 +5,9 @@ How to use
 ----------
   1. `pip install -r requirements.txt`
   2. `python cli.py DKSalaries.csv`
+  The following environment variables are supported:
+    `NGEN: number of generations`
+    `MIN_PLAYER_POINTS: minimum points a player must be valued at, otherwise the player will be ignored`
 
 
 TODO
