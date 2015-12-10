@@ -1,7 +1,6 @@
 import os
 import numpy
 import random
-import array
 
 from deap import algorithms
 from deap import base
@@ -11,7 +10,7 @@ from deap import tools
 MAX_SALARY = 50000
 MAX_POINTS = 5000
 MIN_POINTS = 220
-MED_POINTS = 240
+MED_POINTS = 320
 INDV_INIT_SIZE = 8
 NGEN = int(os.environ.get("NGEN", "500"))
 

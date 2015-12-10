@@ -2,7 +2,7 @@ import os
 from nba_py import team as nbateam
 
 
-MIN_PLAYER_POINTS = int(os.environ.get("MIN_PLAYER_POINTS", "25"))
+MIN_PLAYER_POINTS = int(os.environ.get("MIN_PLAYER_POINTS", "20"))
 
 id2player = {}
 

@@ -18,7 +18,7 @@ class LastNGamesStrategy(object):
         players = get_player_ids(game[0]) + get_player_ids(game[1])
         return self.picks_last_n_games(players)
 
-    def picks_last_n_games(self, player_ids, num_games=5):
+    def picks_last_n_games(self, player_ids, num_games=3):
         picks = []
         print "Getting stats for players"
         for player_id in player_ids:
