@@ -1,5 +1,3 @@
-from nba_py import player as nbaplayer
-
 
 class PotentialPick(object):
     player_id = None
@@ -28,7 +26,3 @@ class PlayerPicker(object):
             best_picks = best_picks + self.strategy.go(game)
         return best_picks
 
-
-class PlayerFilter(object):
-    def filter(self, player):
-        pass

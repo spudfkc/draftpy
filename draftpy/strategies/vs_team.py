@@ -10,11 +10,12 @@ from draftpy.strategies.util import MIN_PLAYER_POINTS
 class VsTeamStrategy(object):
 
     def go(self, game):
-        # TODO add redis caching
-        # FIXME this doesnt work since refactor
-        away, home = game.split('@')
-        away = nbateam.TEAMS[away.upper()]
-        home = nbateam.TEAMS[home.upper()]
+        """game = tuple (home, away)"""
+        home = game[0]
+        away = game[1]
+        # away, home = game.split('@')
+        # away = nbateam.TEAMS[away.upper()]
+        # home = nbateam.TEAMS[home.upper()]
 
         home_picks = self.picks_against_team(home, away)
         away_picks = self.picks_against_team(away, home)
