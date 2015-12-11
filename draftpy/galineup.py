@@ -1,6 +1,7 @@
 import os
 import numpy
 import random
+import multiprocess
 
 from deap import algorithms
 from deap import base
@@ -10,12 +11,12 @@ from deap import tools
 MAX_SALARY = 50000
 MAX_POINTS = 5000
 MIN_POINTS = 220
-MED_POINTS = 320
+MED_POINTS = 310
 INDV_INIT_SIZE = 8
 NGEN = int(os.environ.get("NGEN", "500"))
 
 
-random.seed(64)
+random.seed()
 
 
 class GALineup(object):
@@ -23,9 +24,10 @@ class GALineup(object):
     def __init__(self, players):
         self.players = players
         self.num_players = len(players)
+        self.pos = players_to_position_map(players)
 
         creator.create("Fitness", base.Fitness, weights=(-1.0, 1.0))
-        creator.create("Individual", set, fitness=creator.Fitness)
+        creator.create("Individual", list, fitness=creator.Fitness)
 
         toolbox = base.Toolbox()
         self.toolbox = toolbox
@@ -65,7 +67,9 @@ class GALineup(object):
             bonus = -20000
         # try to filter out more than x2 of same position
         for k, v in positions.iteritems():
-            if v > 2:
+            if k == "C" and (v not in [1, 2]):
+                return 500000, 0
+            elif v > 3:
                 return 500000, 0
         return salary + bonus, points
 
@@ -78,14 +82,24 @@ class GALineup(object):
 
     def mutSet(self, individual):
         """Mutation that pops and adds an element"""
-        if len(individual) > 0:
-            individual.remove(random.choice(sorted(tuple(individual))))
-        individual.add(random.randrange(self.num_players))
+        if len(individual) == 0:
+            # for pos_name, players_in_pos in self.pos:
+            #     individual.add(random.randrange())
+            individual.add(random.randrange(self.num_players))
+            return individual,
+
+
+
+        # to_remove = random.choice(sorted(tuple(individual)))
+        to_remove = random.randrange(len(individual))
+        to_add = random.randrange(self.num_players)
+        individual.remove(to_remove)
+        individual.add(to_add)
 
         return individual,
 
     def main(self):
-        random.seed(64)
+        random.seed()
         MU = 50
         LAMBDA = 100
         CXPB = 0.7
@@ -100,4 +114,48 @@ class GALineup(object):
 
         algorithms.eaMuPlusLambda(pop, self.toolbox, MU, LAMBDA, CXPB, MUTPB, NGEN, stats, halloffame=hof)
         return pop, stats, hof
+
+
+def get_salary(players):
+    return sum([i.salary for i in players])
+
+
+def get_points(players):
+    return sum([i.est_points for i in players])
+
+
+def players_to_position_map(players):
+    pos = {}
+    pos_sf = sorted([i for i in players if i.position == "SF"], key=lambda x: x.est_points)
+    pos_pf = sorted([i for i in players if i.position == "PF"], key=lambda x: x.est_points)
+    pos_sg = sorted([i for i in players if i.position == "SG"], key=lambda x: x.est_points)
+    pos_pg = sorted([i for i in players if i.position == "PG"], key=lambda x: x.est_points)
+    pos_c = sorted([i for i in players if i.position == "C"], key=lambda x: x.est_points)
+
+    pos_f = sorted(pos_sf + pos_pf, key=lambda x: x.est_points)
+    pos_g = sorted(pos_sg + pos_pg, key=lambda x: x.est_points)
+    pos_util = sorted(pos_f + pos_g + pos_c, key=lambda x: x.est_points)
+
+    pos["SF"] = pos_sf
+    pos["PF"] = pos_pf
+    pos["SG"] = pos_sg
+    pos["PG"] = pos_pg
+    pos["C"] = pos_c
+    pos["F"] = pos_f
+    pos["G"] = pos_g
+    pos["UTIL"] = pos_util
+
+    return pos
+
+
+class ApoLineup(object):
+    pos = {}
+
+    def __init__(self, players):
+        self.players = players
+        self.pos = players_to_position_map(players)
+
+    def main(self):
+        pass
+
 

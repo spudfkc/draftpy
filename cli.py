@@ -55,6 +55,9 @@ def run(dkfile, strategy):
         pick.position = name2attr[pick.name][0]
         pick.salary = name2attr[pick.name][1]
 
+    for pick in all_picks:
+        print pick
+
     generator = GALineup(all_picks)
     pop, stats, hof = generator.main()
     hof = [i for i in hof if len(i) == 8]
@@ -77,7 +80,11 @@ def run(dkfile, strategy):
 
 class DKReader(object):
     FIXED_TEAMS = {
-        "GS": "GSW"
+        "GS": "GSW",
+        "PHO": "PHX",
+        "NY": "NYK",
+        "SA": "SAS",
+        "NO": "NOP",
     }
 
     _games = None
@@ -116,8 +123,8 @@ class DKReader(object):
         for game in self.pd_players.GameInfo:
             match = game.split(" ")[0]
             away, home = match.split("@")
-            away = self.fix_team_abbr(away).upper()
-            home = self.fix_team_abbr(home).upper()
+            away = self.fix_team_abbr(away.upper())
+            home = self.fix_team_abbr(home.upper())
             result.append((home, away))
         self._games = set(result)
         return self._games
