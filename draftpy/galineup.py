@@ -12,8 +12,6 @@ MED_POINTS = int(os.environ.get("MED_LINEUP_POINTS", "300"))
 
 MAX_SALARY = 50000
 MAX_POINTS = 5000
-# MIN_POINTS = 260
-# MED_POINTS = 300
 INDV_INIT_SIZE = 8
 NGEN = int(os.environ.get("NGEN", "500"))
 
@@ -74,9 +72,6 @@ class GALineup(object):
             return 500000, 0
         if points > MED_POINTS:
             bonus = -30000
-        # for k, v in self.dup_pos:
-        #     if v > 2:
-        #         return 500000, 0
 
         return salary + bonus, points
 
@@ -105,21 +100,6 @@ class GALineup(object):
 
         random_position = random.choice(self.pos.keys())
         random_player_in_position = random.choice(self.pos[random_position])
-
-        # Check duplicate
-        # current_players = []
-        # try:
-        #     for i in range(len(individual)):
-        #         player_index = individual[i]
-        #         position = self.pos_names[i]
-        #         player = self.pos[position][player_index]
-        #         current_players.append(player)
-        # except IndexError:
-        #     print "fucked"
-
-        # while random_player_in_position in current_players:
-        #     random_position = random.choice(self.pos.keys())
-        #     random_player_in_position = random.choice(self.pos[random_position])
 
         # Replace players
         pos_index = self.pos.keys().index(random_position)
