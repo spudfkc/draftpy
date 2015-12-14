@@ -1,17 +1,19 @@
 import os
 import numpy
 import random
-import multiprocess
 
 from deap import algorithms
 from deap import base
 from deap import creator
 from deap import tools
 
+MIN_POINTS = int(os.environ.get("MIN_LINEUP_POINTS", "260"))
+MED_POINTS = int(os.environ.get("MED_LINEUP_POINTS", "300"))
+
 MAX_SALARY = 50000
 MAX_POINTS = 5000
-MIN_POINTS = 220
-MED_POINTS = 310
+# MIN_POINTS = 260
+# MED_POINTS = 300
 INDV_INIT_SIZE = 8
 NGEN = int(os.environ.get("NGEN", "500"))
 
@@ -22,9 +24,11 @@ random.seed()
 class GALineup(object):
 
     def __init__(self, players):
+        self.dup_pos = {}
         self.players = players
         self.num_players = len(players)
         self.pos = players_to_position_map(players)
+        self.pos_names = list(self.pos.keys())
 
         creator.create("Fitness", base.Fitness, weights=(-1.0, 1.0))
         creator.create("Individual", list, fitness=creator.Fitness)
@@ -37,64 +41,89 @@ class GALineup(object):
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
         toolbox.register("evaluate", self.evalLineup)
-        toolbox.register("mate", self.cxSet)
+        toolbox.register("mate", tools.cxTwoPoint)
         toolbox.register("mutate", self.mutSet)
         toolbox.register("select", tools.selNSGA2)
 
     def evalLineup(self, individual):
         """lower is better?"""
-        positions = {}
         salary = 0.0
         points = 0.0
         bonus = 0.0
         if len(individual) != 8:
             return 500000, 0
+        current_players = []
         for item in individual:
+            current_players.append(self.players[item])
             salary += float(self.players[item].salary)
             points += float(self.players[item].est_points)
-            pos = self.players[item].position
-            pos_count = positions.get(pos, 0)
-            positions[pos] = pos_count + 1
+            position = self.players[item].position
+            num_pos = self.dup_pos.get(position, 0)
+            num_pos += 1
+            self.dup_pos[position] = num_pos
+        if len(current_players) != len(set(current_players)):
+            # Duplicate players
+            return 500000, 0
         if salary > MAX_SALARY:
             # This lineup is too expensive
             return 500000, 0
-        if salary < 47000:
+        if salary < 48000:
             return 500000, 0
         if points < MIN_POINTS:
             # This lineup doesnt make enough points
             return 500000, 0
         if points > MED_POINTS:
-            bonus = -20000
-        # try to filter out more than x2 of same position
-        for k, v in positions.iteritems():
-            if k == "C" and (v not in [1, 2]):
-                return 500000, 0
-            elif v > 3:
-                return 500000, 0
+            bonus = -30000
+        # for k, v in self.dup_pos:
+        #     if v > 2:
+        #         return 500000, 0
+
         return salary + bonus, points
 
-    def cxSet(self, ind1, ind2):
-        """Crossover on input sets"""
-        temp = set(ind1)
-        ind1 &= ind2
-        ind2 ^= temp
-        return ind1, ind2
+    def get_random_player_index_for_position(self, position):
+        players_in_pos = self.pos[position]
+        num_players = len(players_in_pos)
+        random.randrange(num_players)
+
+    def random_player(self):
+        # Get a random position
+        random_index = random.randrange(len(self.pos_names))
+        random_pos_name = self.pos_names[random_index]
+        # Get a random player in that position
+        random_player_in_position = random.randrange(len(self.pos[random_pos_name]))
+
+        new_player = self.pos[random_pos_name][random_player_in_position]
+        return new_player, random_pos_name
 
     def mutSet(self, individual):
         """Mutation that pops and adds an element"""
         if len(individual) == 0:
-            # for pos_name, players_in_pos in self.pos:
-            #     individual.add(random.randrange())
-            individual.add(random.randrange(self.num_players))
+            # We need to guarentee order here
+            for pos_name in self.pos_names:
+                individual.append(random.randrange(len(self.pos[pos_name])))
             return individual,
 
+        random_position = random.choice(self.pos.keys())
+        random_player_in_position = random.choice(self.pos[random_position])
 
+        # Check duplicate
+        # current_players = []
+        # try:
+        #     for i in range(len(individual)):
+        #         player_index = individual[i]
+        #         position = self.pos_names[i]
+        #         player = self.pos[position][player_index]
+        #         current_players.append(player)
+        # except IndexError:
+        #     print "fucked"
 
-        # to_remove = random.choice(sorted(tuple(individual)))
-        to_remove = random.randrange(len(individual))
-        to_add = random.randrange(self.num_players)
-        individual.remove(to_remove)
-        individual.add(to_add)
+        # while random_player_in_position in current_players:
+        #     random_position = random.choice(self.pos.keys())
+        #     random_player_in_position = random.choice(self.pos[random_position])
+
+        # Replace players
+        pos_index = self.pos.keys().index(random_position)
+        individual[pos_index] = self.pos[random_position].index(random_player_in_position)
 
         return individual,
 

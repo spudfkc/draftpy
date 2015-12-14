@@ -12,7 +12,11 @@ from draftpy.galineup import *
 
 strat2class = {
     "lastngames": LastNGamesStrategy,
-    "vsteam": VsTeamStrategy
+    "vsteam": VsTeamStrategy,
+}
+
+lineup2class = {
+    "galineup": GALineup,
 }
 
 
@@ -28,7 +32,16 @@ def main():
 @cli.command()
 @click.argument("dkfile", type=click.Path(exists=True))
 @click.option("--strategy", default="lastngames", help="The strategy to determine player value with.")
-def run(dkfile, strategy):
+@click.option("--lineup-gen", default="galineup", help="The lineup generation strategy to generate lineups.")
+@click.option("--env", type=click.Path(exists=True), default=None, help="Path to a file containing environment variables to use.")
+def run(dkfile, strategy, lineup_gen, env):
+    if env:
+        with open(env, "r") as f:
+            env_data = f.read()
+        for line in env_data.split("\n"):
+            key, value = line.split("=")
+            os.environ[key] = value
+
     filepath = click.format_filename(dkfile)
     reader = DKReader(filepath)
     strat = strat2class.get(strategy.lower())
@@ -58,6 +71,9 @@ def run(dkfile, strategy):
     for pick in all_picks:
         print pick
 
+    if not lineup_gen:
+        return
+
     generator = GALineup(all_picks)
     pop, stats, hof = generator.main()
     hof = [i for i in hof if len(i) == 8]
@@ -65,10 +81,8 @@ def run(dkfile, strategy):
         points = sum([all_picks[i].est_points for i in lineup])
         salary = sum([all_picks[i].salary for i in lineup])
         if points < draftpy.galineup.MIN_POINTS:
-            # print "--points ",
             continue
         if salary > draftpy.galineup.MAX_SALARY:
-            # print "++salary ",
             continue
         print "================================="
         for i in lineup:
@@ -87,6 +101,11 @@ class DKReader(object):
         "NO": "NOP",
     }
 
+    FIXED_PLAYERS = {
+        "O.J. Mayo": "O.J. Mayo",
+        "J.R. Smith": "J.R. Smith",
+    }
+
     _games = None
     _players = None
 
@@ -96,6 +115,11 @@ class DKReader(object):
 
     def fix_team_abbr(self, team):
         return self.FIXED_TEAMS.get(team, team)
+
+    def fix_player_name(self, player_name):
+        if player_name in self.FIXED_PLAYERS.keys():
+            return self.FIXED_PLAYERS[player_name]
+        return player_name.replace(".", "")
 
     def read(self):
         """Reads the file"""
@@ -109,7 +133,7 @@ class DKReader(object):
         result = []
         players = [list(x) for x in self.pd_players.values]
         for player in players:
-            name = player[1].replace(".", "")
+            name = self.fix_player_name(player[1])
             result.append((name, player[0], player[2]))
         self._players = result
         return self._players

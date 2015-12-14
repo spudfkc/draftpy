@@ -19,3 +19,4 @@ TODO
   - add logic for double-double and triple-double to strategies
   - learn more cool things about pandas
   - tests
+  - account for injuries
