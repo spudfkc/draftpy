@@ -13,9 +13,6 @@ class VsTeamStrategy(object):
         """game = tuple (home, away)"""
         home = game[0]
         away = game[1]
-        # away, home = game.split('@')
-        # away = nbateam.TEAMS[away.upper()]
-        # home = nbateam.TEAMS[home.upper()]
 
         home_picks = self.picks_against_team(home, away)
         away_picks = self.picks_against_team(away, home)
@@ -23,8 +20,10 @@ class VsTeamStrategy(object):
         return all_picks
 
     def picks_against_team(self, team, against_team):
+        against_team = nbateam.TEAMS[against_team]
         picks = []
         for player_id in get_player_ids(team):
+            print "Geting stats for player: {}".format(player_id)
             stats = nbateam.TeamVsPlayer(team_id=against_team['id'], vs_player_id=player_id)
             tstats = stats.vs_player_overall()
             est_points = 0

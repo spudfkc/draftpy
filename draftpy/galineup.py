@@ -72,6 +72,11 @@ class GALineup(object):
             return 500000, 0
         if points > MED_POINTS:
             bonus = -30000
+        # for i in range(len(individual)):
+        #     position_check = self.pos_names[i]
+        #     player_index = individual[i]
+        #     if player_index not in self.pos[position_check]:
+        #         return 500000, 0
 
         return salary + bonus, points
 
