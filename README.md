@@ -1,5 +1,8 @@
-Draftpy  [![Build Status](https://travis-ci.org/spudfkc/draftpy.svg?branch=master)](https://travis-ci.org/spudfkc/draftpy)
+Draftpy  
 =======
+[![Build Status](https://travis-ci.org/spudfkc/draftpy.svg?branch=master)](https://travis-ci.org/spudfkc/draftpy)  
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/spudfkc/draftpy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)  
+
 
 How to use
 ----------
